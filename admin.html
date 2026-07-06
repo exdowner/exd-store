@@ -3,96 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EXD ADMIN | PANEL</title>
+    <title>EXD ADMIN | SYSTEM</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; padding: 40px 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: #000000; color: #ffffff; padding: 40px 20px; }
         
-        .header-panel { max-width: 1200px; margin: 0 auto 30px auto; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff88; padding-bottom: 20px; }
-        h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; }
-        h1 span { color: #00ff88; }
+        .header-panel { max-width: 1200px; margin: 0 auto 40px auto; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff; padding-bottom: 20px; }
+        h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; }
+        h1 span { color: #000000; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; }
 
-        .grid-orders { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .grid-orders { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
         
-        .card-admin { background: #050505; border: 1px solid rgba(255,255,255,0.1); padding: 25px; position: relative; }
-        .card-admin.waiting { border-left: 4px solid #fff; }
-        .card-admin.approved { border-left: 4px solid #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.05); }
+        .card-admin { background: #000000; border: 1px solid rgba(255,255,255,0.2); padding: 30px; position: relative; }
+        .card-admin.waiting { border-left: 4px solid #ffffff; }
+        .card-admin.approved { border-left: 4px solid #ffffff; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
 
-        .meta-line { margin-bottom: 10px; font-size: 0.9rem; }
-        .meta-line strong { text-transform: uppercase; color: #666; font-size: 0.75rem; letter-spacing: 1px; display: inline-block; width: 80px; }
+        .meta-line { margin-bottom: 12px; font-size: 0.9rem; }
+        .meta-line strong { text-transform: uppercase; color: #ffffff; opacity: 0.4; font-size: 0.75rem; letter-spacing: 1px; display: inline-block; width: 80px; }
         
-        .status-tag { padding: 3px 8px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; background: #222; }
-        .status-tag.waiting { color: #fff; border: 1px solid #fff; }
-        .status-tag.approved { color: #00ff88; border: 1px solid #00ff88; }
+        .status-tag { padding: 4px 8px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; background: #000; border: 1px solid #fff; }
 
-        .action-zone { margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); }
-        input { width: 100%; padding: 10px; background: #000; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem; margin-bottom: 10px; outline: none; }
-        input:focus { border-color: #00ff88; }
+        .action-zone { margin-top: 25px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.2); }
+        input { width: 100%; padding: 12px; background: #000000; border: 1px solid rgba(255,255,255,0.3); color: #ffffff; font-size: 0.85rem; margin-bottom: 12px; outline: none; }
+        input:focus { border-color: #ffffff; }
         
-        .btn-approve { width: 100%; padding: 12px; background: #00ff88; color: #000; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 0.8rem; }
-        .btn-approve:hover { background: #fff; }
+        .btn-approve { width: 100%; padding: 14px; background: #ffffff; color: #000000; border: 1px solid #ffffff; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 0.8rem; letter-spacing: 1px; }
+        .btn-approve:hover { background: #000000; color: #ffffff; }
     </style>
 </head>
 <body>
 
     <div class="header-panel">
-        <h1>EXD_<span>HQ_DASHBOARD</span></h1>
-        <div style="font-size: 0.8rem; color: #00ff88; letter-spacing: 1px;">SISTEMA OPERACIONAL</div>
+        <h1>EXD_<span>CORE_CONTROL</span></h1>
+        <div style="font-size: 0.8rem; letter-spacing: 2px; font-weight: bold;">ADMIN PANEL</div>
     </div>
 
-    <div class="grid-orders" id="ordersContainer">
-        </div>
+    <div class="grid-orders" id="ordersContainer"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_AUTH_DOMAIN",
-            databaseURL: "SUA_DATABASE_URL",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_STORAGE_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-            appId: "SEU_APP_ID"
+            apiKey: "AIzaSyDsDeOjhkkKtXK8kBpuVORQ1FTI_EdBTdU",
+            authDomain: "pobrecraft-c517c.firebaseapp.com",
+            databaseURL: "https://pobrecraft-c517c-default-rtdb.firebaseio.com",
+            projectId: "pobrecraft-c517c",
+            storageBucket: "pobrecraft-c517c.firebasestorage.app",
+            messagingSenderId: "906438912132",
+            appId: "1:906438912132:web:a3d9827600d3c0a52dbad1"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         const ordersContainer = document.getElementById('ordersContainer');
 
-        // Escuta em tempo real todas as alterações na referência 'pedidos/'
         onValue(ref(db, 'pedidos/'), (snapshot) => {
             ordersContainer.innerHTML = "";
             const data = snapshot.val();
-            if(!data) {
-                ordersContainer.innerHTML = "<p style='color:#444;'>Nenhum pedido registrado na rede.</p>";
-                return;
-            }
+            if(!data) { ordersContainer.innerHTML = "<p style='opacity:0.5;'>Nenhum log de pedido pendente.</p>"; return; }
 
             Object.keys(data).forEach(keyId => {
                 const item = data[keyId];
                 const isApproved = item.status === 'aprovado';
-
                 const card = document.createElement('div');
                 card.className = `card-admin ${isApproved ? 'approved' : 'waiting'}`;
                 
                 card.innerHTML = `
-                    <div class="meta-line"><strong>ID:</strong> <span style="color:#00ff88; font-weight:bold;">${item.id}</span></div>
+                    <div class="meta-line"><strong>ID:</strong> <span style="font-weight:bold;">${item.id}</span></div>
                     <div class="meta-line"><strong>Discord:</strong> ${item.discord}</div>
                     <div class="meta-line"><strong>Produto:</strong> ${item.produto}</div>
                     <div class="meta-line"><strong>Data:</strong> ${item.data || 'N/A'}</div>
-                    <div class="meta-line"><strong>Status:</strong> <span class="status-tag ${isApproved ? 'approved' : 'waiting'}">${item.status}</span></div>
+                    <div class="meta-line"><strong>Status:</strong> <span class="status-tag">${item.status}</span></div>
                     
                     ${!isApproved ? `
                         <div class="action-zone">
-                            <input type="text" id="key_${item.id}" placeholder="Gerar/Inserir Licença (Key)">
-                            <input type="text" id="dl_${item.id}" placeholder="Link Direto de Download">
+                            <input type="text" id="key_${item.id}" placeholder="Chave de Licença (Key)">
+                            <input type="text" id="dl_${item.id}" placeholder="Link para Download">
                             <button class="btn-approve" data-id="${item.id}">Liberar Acesso</button>
                         </div>
                     ` : `
-                        <div class="action-zone" style="opacity:0.5;">
+                        <div class="action-zone" style="opacity:0.6;">
                             <div class="meta-line" style="word-break:break-all;"><strong>Key:</strong> ${item.key}</div>
                             <div class="meta-line" style="word-break:break-all;"><strong>Link:</strong> ${item.download}</div>
                         </div>
@@ -101,24 +92,19 @@
                 ordersContainer.appendChild(card);
             });
 
-            // Adiciona gatilhos nos botões de aprovação mapeados
             document.querySelectorAll('.btn-approve').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const id = e.target.getAttribute('data-id');
                     const keyValue = document.getElementById(`key_${id}`).value.trim();
                     const dlValue = document.getElementById(`dl_${id}`).value.trim();
 
-                    if(!keyValue || !dlValue) {
-                        alert('Preencha a KEY e o LINK DE DOWNLOAD para aprovar.');
-                        return;
-                    }
+                    if(!keyValue || !dlValue) { alert('Insira a KEY e o LINK.'); return; }
 
-                    // Atualiza banco de dados com informações do produto injetado
                     update(ref(db, 'pedidos/' + id), {
                         status: "aprovado",
                         key: keyValue,
                         download: dlValue
-                    }).className = 'Finalizado';
+                    });
                 });
             });
         });
