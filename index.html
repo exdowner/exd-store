@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXD STORE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow-x: hidden; }
+        
+        .matrix-bg { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; opacity: 0.15; pointer-events: none; }
+        
+        .container { width: 100%; max-width: 450px; padding: 30px; background: rgba(5, 5, 5, 0.8); border: 1px solid #00ff88; box-shadow: 0 0 30px rgba(0, 255, 136, 0.1); position: relative; }
+        .container::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, #00ff88, #fff, #000); z-index: -1; opacity: 0.2; }
+
+        h1 { font-size: 2.5rem; text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 10px; font-weight: 900; }
+        h1 span { color: #00ff88; text-shadow: 0 0 10px #00ff88; }
+        .subtitle { text-align: center; font-size: 0.8rem; letter-spacing: 2px; color: #888; margin-bottom: 40px; text-transform: uppercase; }
+
+        .product-card { border: 1px solid rgba(255,255,255,0.1); padding: 25px; margin-bottom: 30px; background: rgba(255,255,255,0.02); text-align: center; }
+        .product-title { font-size: 1.4rem; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
+        .price { font-size: 1.8rem; color: #00ff88; font-weight: bold; margin-bottom: 20px; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 8px; }
+        input { width: 100%; padding: 15px; background: #000; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: #00ff88; box-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
+
+        .btn { width: 100%; padding: 18px; background: #00ff88; color: #000; border: none; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #fff; box-shadow: 0 0 25px rgba(255,255,255,0.6); transform: translateY(-2px); }
+
+        .nav-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .nav-link:hover { color: #00ff88; }
+
+        /* Modal Resultado */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #000; border: 1px solid #fff; padding: 40px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 0 40px rgba(255,255,255,0.1); }
+        .order-id { font-size: 1.8rem; color: #00ff88; font-weight: bold; margin: 20px 0; letter-spacing: 2px; border: 1px dashed #00ff88; padding: 10px; background: rgba(0,255,136,0.05); }
+    </style>
+</head>
+<body>
+
+    <canvas class="matrix-bg" id="lines"></canvas>
+
+    <div class="container">
+        <h1>EXD <span>STORE</span></h1>
+        <div class="subtitle">Corporation System</div>
+
+        <div class="product-card">
+            <div class="product-title">EXD PAINEL</div>
+            <div class="price">R$ 00,00</div>
+            <div class="input-group">
+                <label>Seu ID do Discord</label>
+                <input type="text" id="discordInput" placeholder="Ex: lcz#0000 ou lcz.exd">
+            </div>
+            <button class="btn" id="buyBtn">Gerar Pedido</button>
+        </div>
+
+        <a href="pedido.html" class="nav-link">Já possui um ID? Acompanhar Pedido</a>
+        <a href="https://discord.gg/dnNJ6ANP3J" target="_blank" class="nav-link" style="color:#00ff88;">Entrar no Discord Oficial</a>
+    </div>
+
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h3 style="text-transform: uppercase; letter-spacing: 2px;">Pedido Gerado!</h3>
+            <p style="color:#888; font-size:0.9rem; margin-top:10px;">Guarde seu ID para consultar e receber o produto após o pagamento no Discord.</p>
+            <div class="order-id" id="displayId">EXD-XXXXX</div>
+            <button class="btn" style="background:#fff; color:#000;" onclick="window.location.href='pedido.html'">Acompanhar Entrega</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_AUTH_DOMAIN",
+            databaseURL: "SUA_DATABASE_URL",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_STORAGE_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        function generateUniqueId() {
+            const num = Math.floor(10000 + Math.random() * 90000);
+            return `EXD-${num}`;
+        }
+
+        document.getElementById('buyBtn').addEventListener('click', async () => {
+            const discordUser = document.getElementById('discordInput').value.trim();
+            if(!discordUser) { alert('Insira seu Discord ID obrigatóriamente.'); return; }
+
+            const orderId = generateUniqueId();
+            const dateStr = new Date().toLocaleString('pt-BR');
+
+            try {
+                await set(ref(db, 'pedidos/' + orderId), {
+                    id: orderId,
+                    discord: discordUser,
+                    produto: "EXD PAINEL",
+                    status: "aguardando",
+                    key: "",
+                    download: "",
+                    data: dateStr
+                });
+
+                document.getElementById('displayId').innerText = orderId;
+                document.getElementById('resultModal').style.display = 'flex';
+            } catch(error) {
+                console.error(error);
+                alert('Erro ao processar banco de dados.');
+            }
+        });
+    </script>
+    <script>
+        // Efeito de Linhas de Fundo Simplificado
+        const canvas = document.getElementById('lines');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let yArr = Array(Math.floor(canvas.width/20)).fill(0);
+        function draw() {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#00ff88'; ctx.font = '10px monospace';
+            yArr.forEach((y, i) => {
+                ctx.fillText(Math.random() > 0.5 ? "1" : "0", i*20, y);
+                yArr[i] = y > canvas.height || y > Math.random()*10000 ? 0 : y + 20;
+            });
+        }
+        setInterval(draw, 40);
+    </script>
+</body>
+</html>
